@@ -1,118 +1,332 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, {Component, useState} from 'react';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
+  TouchableOpacity,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export default class App extends React.Component {
+    constructor(props){
+        super(props);
+        this.state= {
+            running: false,
+            startTime: new Date(),
+            oldTime:0,
+            lapTime: 0,
+            laps: [],
+            newLapTime:0,
+            startTimeLap: new Date(),
+            oldTimeLap:0,
+        };
+        this.LapButton = this.LapButton.bind(this);
+        this.StartButton = this.StartButton.bind(this);
+        this.StartRunning =this.StartRunning.bind(this);
+        this.ResetRunning =this.ResetRunning.bind(this);
+        this.TimeLap = this.TimeLap.bind(this);
+        this.TimeDisplay = this.TimeDisplay.bind(this);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+    };
+    StartRunning = () =>{
+        return(
+            this.setState({running: true})
+        );
+    }
+    ResetRunning = () =>{
+        return(
+            this.setState({running: false})
+        );
+    }
+    LapButton = () =>{
+        return (
+          <View style={[styles.buttonLeft]}>
+              <TouchableOpacity                
+                  style={styles.lapBut}
+                    onPress={this.state.running ? this.handleLap : this.handleReset}
+                >
+                  <Text style={styles.timeTextLap}>{this.state.running ? "Lap" : "Reset" }</Text>
+              </TouchableOpacity>
+          </View>
+        )
+      }
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+    StartButton = ()=>{
+        var colorBut  = !this.state.running ? styles.startBut : styles.stopBut;
+        return(
+        <View style={[styles.buttonRight]}>
+            <TouchableOpacity                
+                style={[{
+                    alignSelf: 'center',
+                    height: 100,
+                    width: 100,
+                    marginTop: 10,
+                    backgroundColor: '#1B1B1C',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderRadius:50,
+                    
+                },colorBut]}
+                onPress={this.state.running ? this.handleStop : this.handleStart}
+                >
+                <Text style={[styles.timeTextLap]}>{this.state.running ? "Stop" : "Start"}</Text>
+            </TouchableOpacity>
+        </View> )
+    }  
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+    TimeDisplay(duration){
+        var milliseconds = Math.floor((duration % 1000) / 10),
+              seconds = Math.floor((duration / 1000) % 60),
+              minutes = Math.floor((duration / (1000 * 60)) % 60)
+      
+        return (
+          <View style={[styles.time]}>
+              <View style={[styles.minute]}>
+                  <Text style={styles.timeText}>{(minutes < 10) ? "0" + minutes : minutes}</Text>
+              </View>
+              <Text style={styles.timeText}>:</Text>
+              <View style={[styles.second]}>
+                  <Text style={styles.timeText}>{(seconds < 10) ? "0" + seconds : seconds}</Text>
+              </View>
+              <Text style={styles.timeText} >.</Text>
+              <View style={[styles.milisecond]}>
+                  <Text style={styles.timeText}>{(milliseconds < 10) ? "0" + milliseconds : milliseconds}</Text>
+              </View>
+          </View>
+        )    
+    }
+    TimeLap(){
+      const minLapTime = Math.min(...this.state.laps);
+      const maxLapTime = Math.max(...this.state.laps);
+      const lapsLength = this.state.laps.length;
+      console.log(this.state.laps.length);
+        return this.state.laps.map(function(time,index){
+            var milliseconds = Math.floor((time % 1000) / 10),
+              seconds = Math.floor((time / 1000) % 60),
+              minutes = Math.floor((time / (1000 * 60)) % 60)
+            if (time === minLapTime && (lapsLength > 1)) {          
+                return(
+                    <View style={[styles.lap]}>
+                        <Text style={[styles.timeTextLap,{color: 'green',marginVertical:20}]}>Lap {index}</Text>
+                        <View style={[styles.timeLap]}>
+                            <View style={[styles.minute]}>
+                                <Text style={[styles.timeTextLap,{color: 'green'}]}>{(minutes < 10) ? "0" + minutes : minutes}</Text>
+                            </View>
+                            <Text style={[styles.timeTextLap,{color: 'green'}]}>:</Text>
+                            <View style={[styles.second]}>
+                                <Text style={[styles.timeTextLap,{color: 'green'}]}>{(seconds < 10) ? "0" + seconds : seconds}</Text>
+                            </View>
+                            <Text style={[styles.timeTextLap,{color: 'green'}]} >.</Text>
+                            <View style={[styles.milisecond]}>
+                                <Text style={[styles.timeTextLap,{color: 'green'}]}>{(milliseconds < 10) ? "0" + milliseconds : milliseconds}</Text>
+                            </View>
+                        </View>
+                    </View> 
+                  ) 
+            }
+            else if (time === maxLapTime && (lapsLength > 1)) {
+              return(
+                <View style={[styles.lap]}>
+                    <Text style={[styles.timeTextLap,,{color: 'red',marginVertical:20}]}>Lap {index}</Text>
+                    <View style={[styles.timeLap]}>
+                        <View style={[styles.minute]}>
+                            <Text style={[styles.timeTextLap,{color: 'red'}]}>{(minutes < 10) ? "0" + minutes : minutes}</Text>
+                        </View>
+                        <Text style={[styles.timeTextLap,{color: 'red'}]}>:</Text>
+                        <View style={[styles.second]}>
+                            <Text style={[styles.timeTextLap,{color: 'red'}]}>{(seconds < 10) ? "0" + seconds : seconds}</Text>
+                        </View>
+                        <Text style={[styles.timeTextLap,{color: 'red'}]} >.</Text>
+                        <View style={[styles.milisecond]}>
+                            <Text style={[styles.timeTextLap,{color: 'red'}]}>{(milliseconds < 10) ? "0" + milliseconds : milliseconds}</Text>
+                        </View>
+                    </View>
+                </View> 
+              ) 
+            }
+            else {
+                return(
+                    <View style={[styles.lap]}>
+                        <Text style={[{color: 'white',marginVertical:20},styles.timeTextLap]}>Lap {index}</Text>
+                        <View style={[styles.timeLap]}>
+                            <View style={[styles.minute]}>
+                                <Text style={styles.timeTextLap}>{(minutes < 10) ? "0" + minutes : minutes}</Text>
+                            </View>
+                            <Text style={styles.timeTextLap}>:</Text>
+                            <View style={[styles.second]}>
+                                <Text style={styles.timeTextLap}>{(seconds < 10) ? "0" + seconds : seconds}</Text>
+                            </View>
+                            <Text style={styles.timeTextLap} >.</Text>
+                            <View style={[styles.milisecond]}>
+                                <Text style={styles.timeTextLap}>{(milliseconds < 10) ? "0" + milliseconds : milliseconds}</Text>
+                            </View>
+                        </View>
+                    </View> 
+                  ) 
+            }
+                      
+        })
+       
+      }
+    
+    handleStart = () => {
+      this.setState({ 
+        startTime: Date.now(), 
+        startTimeLap: Date.now(),
+        running: true,
+        oldTime: this.state.oldTime || 0 ,
+        oldTimeLap: this.state.oldTimeLap || 0,
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+      });
+      this.requestAnimationFrameId = requestAnimationFrame(this.updateTimer);
+    }
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+    updateTimer=() => {
+      if (this.state.running) {
+        const lapTime = Date.now() - this.state.startTime + this.state.oldTime;
+
+        this.setState({ lapTime:lapTime});
+        this.requestAnimationFrameId = requestAnimationFrame(this.updateTimer);
+      }
+    }
+
+    handleStop = () =>{      
+      this.setState({running:false,oldTime:this.state.lapTime});
+    }
+
+    handleReset = () =>{
+      this.setState({
+        running: false,
+        startTime: new Date(),
+        oldTime:0,
+        lapTime: 0,
+        laps: [],
+      });
+    }
+
+    handleLap = () =>{
+      const lapTime = Date.now() - this.state.startTimeLap;
+      this.setState(prevState => ({
+        laps: [...prevState.laps, lapTime],
+        oldTimeLap: prevState.oldTime + lapTime,
+        startTimeLap: Date.now(), 
+      }));
+    }
+
+    render(){
+        return (
+            <View style={styles.container}>
+                
+                <View style={{flex:3,alignSelf:'center',justifyContent:'flex-end'}}>
+                    <Text style={{alignSelf:'center'}}>{this.TimeDisplay(this.state.lapTime)}</Text>
+                </View>
+                
+                <View style={[styles.button,{flex:2}]}>
+                    {this.LapButton()}
+                    {this.StartButton()}                   
+                </View>
+                <View style={{flex:3,margin:20}}>
+                    <ScrollView >
+            
+                        {this.TimeLap()}               
+                    
+                    </ScrollView>
+                </View>
+                
+                             
+            </View>
+        )       
+    }
+    
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flexDirection: 'column',
+    flex: 1,
+    backgroundColor:'black'
+
+    
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  lapBut:{
+    alignSelf: 'center',
+    height: 100,
+    width: 100,
+    marginTop: 10,
+    backgroundColor: '#1B1B1C',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    borderWidth: 1, 
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  startBut:{
+ 
+    backgroundColor:'#19371F',
   },
-  highlight: {
-    fontWeight: '700',
+  stopBut:{
+
+    backgroundColor:'#441D1D',
   },
+  time:{
+    flexDirection:'row',
+    alignSelf:'center',
+
+  },
+  timeLap:{
+    flexDirection:'row',
+    alignSelf:'center',
+
+  },
+  minute:{
+
+  },
+  second:{
+
+  },
+  milisecond:{
+
+  },
+  button:{
+    flexDirection:'row',
+    justifyContent:'space-around',
+    alignItems:'flex-end'
+    
+  },
+  buttonLeft:{
+    
+  },
+  buttonRight:{
+
+  },
+  but:{
+    borderRadius:30,
+  },
+  lap:{
+
+    paddingHorizontal:20,
+    flexDirection:'row',
+    justifyContent:'space-between',
+    alignItems:'center',
+    borderTopColor:'#1B1B1C',
+    borderBottomColor:'#1B1B1C',
+    borderWidth:1,
+    
+  },
+  timeText:{
+    fontSize:90,
+    color:'white',
+    fontWeight:'100',
+
+  },
+  timeTextLap:{
+    color:'white',
+    fontSize:20,
+
+  },
+
 });
 
-export default App;
+
