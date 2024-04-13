@@ -55,6 +55,7 @@ export default class App extends React.Component {
 
     StartButton = ()=>{
         var colorBut  = !this.state.running ? styles.startBut : styles.stopBut;
+        var colorText = !this.state.running ? styles.startText : styles.stopText;
         return(
         <View style={[styles.buttonRight]}>
             <TouchableOpacity                
@@ -72,7 +73,7 @@ export default class App extends React.Component {
                 },colorBut]}
                 onPress={this.state.running ? this.handleStop : this.handleStart}
                 >
-                <Text style={[styles.timeTextLap]}>{this.state.running ? "Stop" : "Start"}</Text>
+                <Text style={[styles.timeTextLap,colorText]}>{this.state.running ? "Stop" : "Start"}</Text>
             </TouchableOpacity>
         </View> )
     }  
@@ -110,18 +111,18 @@ export default class App extends React.Component {
             if (time === minLapTime && (lapsLength > 1)) {          
                 return(
                     <View style={[styles.lap]}>
-                        <Text style={[styles.timeTextLap,{color: 'green',marginVertical:20}]}>Lap {index}</Text>
+                        <Text style={[styles.timeTextLap,{color: '#00FF37',marginVertical:20}]}>Lap {index+1}</Text>
                         <View style={[styles.timeLap]}>
                             <View style={[styles.minute]}>
-                                <Text style={[styles.timeTextLap,{color: 'green'}]}>{(minutes < 10) ? "0" + minutes : minutes}</Text>
+                                <Text style={[styles.timeTextLap,{color: '#00FF37'}]}>{(minutes < 10) ? "0" + minutes : minutes}</Text>
                             </View>
-                            <Text style={[styles.timeTextLap,{color: 'green'}]}>:</Text>
+                            <Text style={[styles.timeTextLap,{color: '#00FF37'}]}>:</Text>
                             <View style={[styles.second]}>
-                                <Text style={[styles.timeTextLap,{color: 'green'}]}>{(seconds < 10) ? "0" + seconds : seconds}</Text>
+                                <Text style={[styles.timeTextLap,{color: '#00FF37'}]}>{(seconds < 10) ? "0" + seconds : seconds}</Text>
                             </View>
-                            <Text style={[styles.timeTextLap,{color: 'green'}]} >.</Text>
+                            <Text style={[styles.timeTextLap,{color: '#00FF37'}]} >.</Text>
                             <View style={[styles.milisecond]}>
-                                <Text style={[styles.timeTextLap,{color: 'green'}]}>{(milliseconds < 10) ? "0" + milliseconds : milliseconds}</Text>
+                                <Text style={[styles.timeTextLap,{color: '#00FF37'}]}>{(milliseconds < 10) ? "0" + milliseconds : milliseconds}</Text>
                             </View>
                         </View>
                     </View> 
@@ -130,7 +131,7 @@ export default class App extends React.Component {
             else if (time === maxLapTime && (lapsLength > 1)) {
               return(
                 <View style={[styles.lap]}>
-                    <Text style={[styles.timeTextLap,,{color: 'red',marginVertical:20}]}>Lap {index}</Text>
+                    <Text style={[styles.timeTextLap,,{color: 'red',marginVertical:20}]}>Lap {index+1}</Text>
                     <View style={[styles.timeLap]}>
                         <View style={[styles.minute]}>
                             <Text style={[styles.timeTextLap,{color: 'red'}]}>{(minutes < 10) ? "0" + minutes : minutes}</Text>
@@ -150,7 +151,7 @@ export default class App extends React.Component {
             else {
                 return(
                     <View style={[styles.lap]}>
-                        <Text style={[{color: 'white',marginVertical:20},styles.timeTextLap]}>Lap {index}</Text>
+                        <Text style={[{color: 'white',marginVertical:20},styles.timeTextLap]}>Lap {index+1}</Text>
                         <View style={[styles.timeLap]}>
                             <View style={[styles.minute]}>
                                 <Text style={styles.timeTextLap}>{(minutes < 10) ? "0" + minutes : minutes}</Text>
@@ -247,9 +248,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     flex: 1,
-    backgroundColor:'black'
-
-    
+    backgroundColor:'black'   
   },
   lapBut:{
     alignSelf: 'center',
@@ -263,12 +262,18 @@ const styles = StyleSheet.create({
     borderWidth: 1, 
   },
   startBut:{
- 
     backgroundColor:'#19371F',
+    
   },
   stopBut:{
-
+    
     backgroundColor:'#441D1D',
+  },
+  startText:{
+    color:'#00FF37',
+  },
+  stopText:{
+    color:'red',
   },
   time:{
     flexDirection:'row',
@@ -324,7 +329,6 @@ const styles = StyleSheet.create({
   timeTextLap:{
     color:'white',
     fontSize:20,
-
   },
 
 });
